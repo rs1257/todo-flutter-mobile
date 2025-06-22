@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:todo/model/priority.dart';
 import 'package:todo/model/tag.dart';
 
-part 'task.g.dart';
+part '../adapter/task.g.dart';
 
 @HiveType(typeId: 0)
 class Task {

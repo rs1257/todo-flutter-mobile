@@ -2,15 +2,10 @@
 
 A new Flutter project.
 
-## Getting Started
+## Generate adapters
 
-This project is a starting point for a Flutter application.
+Run the command `dart run build_runner build` to generate the necessary adapters for
+your models.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+You need to first specify the part in the same folder as the model file. Then move it to adapters
+once generated.

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:todo/add_task_bottom_sheet.dart';
+import 'package:todo/model/tag.dart';
 import 'package:todo/task_tile.dart';
 
 import 'model/task.dart';
@@ -11,6 +13,7 @@ void main() async {
   Hive.registerAdapter(TaskAdapter());
 
   await Hive.openBox<Task>('tasks');
+  await Hive.openBox<Tag>('tags');
 
   runApp(const MyApp());
 }
@@ -42,11 +45,21 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late Box<Task> taskBox;
+  late Box<Tag> tagBox;
+  int currentPageIndex = 0;
 
   @override
   void initState() {
     super.initState();
     taskBox = Hive.box<Task>('tasks');
+    tagBox = Hive.box<Tag>('tags');
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    taskBox.close();
+    tagBox.close();
   }
 
   @override
@@ -57,60 +70,60 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: ListView.builder(
-          itemCount: taskBox.length,
-          itemBuilder: (context, index) {
-            Task task = taskBox.getAt(index)!;
-            return Card(
-              child: TaskTile(
-                task: Task(
-                  name: task.name,
-                  description: task.description,
-                  date: task.date,
-                  time: task.time,
+        child: [
+          ListView.builder(
+            itemCount: taskBox.length,
+            itemBuilder: (context, index) {
+              Task task = taskBox.getAt(index)!;
+              return Card(
+                child: TaskTile(
+                  task: Task(
+                    name: task.name,
+                    description: task.description,
+                    date: task.date,
+                    time: task.time,
+                  ),
+                  onDelete: () {
+                    taskBox.deleteAt(index);
+                    setState(() {});
+                  },
                 ),
-                onDelete: () {
-                  taskBox.deleteAt(index);
-                  setState(() {});
-                },
-              ),
-            );
-          },
-        ),
+              );
+            },
+          ),
+          Text("Tags"),
+          Text("Settings"),
+        ][currentPageIndex],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => {
-          taskBox.add(
-            Task(
-              name: "Test1${DateTime.timestamp()}",
-              description: 'I am description',
-              date: DateTime.timestamp(),
-              time: DateTime.timestamp(),
-            ),
-          ),
-          setState(() {}),
           showModalBottomSheet(
             context: context,
             builder: (builder) {
-              return Container(
-                height: 350.0,
-                color: Colors.transparent,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(10.0),
-                      topRight: const Radius.circular(10.0),
-                    ),
-                  ),
-                  child: Center(child: Text("This is a modal sheet")),
-                ),
+              return AddTaskBottomSheet(
+                updateParentState: () {
+                  setState(() {});
+                },
               );
             },
           ),
         },
         tooltip: 'Add',
         child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentPageIndex = index;
+          });
+        },
+        indicatorColor: Colors.blue,
+        selectedIndex: currentPageIndex,
+        destinations: const <Widget>[
+          NavigationDestination(icon: Icon(Icons.assignment), label: 'Tasks'),
+          NavigationDestination(icon: Icon(Icons.label), label: 'Tags'),
+          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
+        ],
       ),
     );
   }
