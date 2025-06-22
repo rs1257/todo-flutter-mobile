@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'TODO',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
       home: MyHomePage(title: 'TODO'),
     );
@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         },
         tooltip: 'Add',
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add_task),
       ),
       bottomNavigationBar: NavigationBar(
         onDestinationSelected: (int index) {
